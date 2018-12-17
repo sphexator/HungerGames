@@ -1,29 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
-using HungerGame.Entities;
+﻿using HungerGame.Entities.User;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Processing.Drawing;
-using SixLabors.ImageSharp.Processing.Drawing.Brushes;
-using SixLabors.ImageSharp.Processing.Filters;
-using SixLabors.ImageSharp.Processing.Text;
-using SixLabors.ImageSharp.Processing.Transforms;
 using SixLabors.Primitives;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
+using HungerGame.Entities;
+using HungerGame.Entities.Internal;
 using Image = SixLabors.ImageSharp.Image;
 
 namespace HungerGame.Generator
 {
-    internal class ImageGenerator
+    internal class ImageGenerator : IRequired
     {
-        internal ImageGenerator() {}
+        private readonly HttpClient _httpClient;
+        internal ImageGenerator(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
 
-        internal async Task<Stream> GenerateEventImageAsync(IEnumerable<HungerGameLive> profile)
+        internal async Task<Stream> GenerateEventImageAsync(IEnumerable<HungerGameProfile> profile)
         {
             if (profile == null) throw new ArgumentNullException(nameof(profile));
             var result = new MemoryStream();
@@ -135,7 +136,7 @@ namespace HungerGame.Generator
             return new PointF(starterWidth + seat * spacerWidth, starterHeight + row * spacerHeight);
         }
 
-        private static int GetImageHeight(IReadOnlyCollection<Profile> profile)
+        private static int GetImageHeight(IReadOnlyCollection<HungerGameProfile> profile)
         {
             if (profile.Count <= 5) return 106;
             if (profile.Count <= 10) return 207;
@@ -148,10 +149,9 @@ namespace HungerGame.Generator
             try
             {
                 if (userid < 100) return Image.Load($"Cache/DefaultAvatar/{userid}.png").Clone();
-                var user = _client.GetUser(userid);
                 if (user == null && user.GetAvatarUrl() == null) return Image.Load(@"Cache\DefaultAvatar\Default.png").Clone();
                 return Image.Load(
-                    await new HttpClient().GetStreamAsync(user.GetAvatarUrl(ImageFormat.Png, 1024))).Clone();
+                    await _httpClient.GetStreamAsync(user.GetAvatarUrl(ImageFormat.Png, 1024))).Clone();
             }
             catch
             {

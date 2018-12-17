@@ -1,4 +1,4 @@
-﻿namespace HungerGame.Entities
+﻿namespace HungerGame.Entities.User
 {
     public class HungerGameProfile
     {
@@ -8,7 +8,7 @@
         public double Stamina { get; set; } = 100;
         public double Hunger { get; set; } = 100;
         public double Thirst { get; set; } = 100;
-        public double Tiredness { get; set; } = 100;
+        public double Tiredness { get; set; }
         public bool Bleeding { get; set; } = false;
         public PlayerInventory Inventory { get; set; } = new PlayerInventory();
     }

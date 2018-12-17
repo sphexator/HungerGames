@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using HungerGame.Entities.User.Items;
+using System.Collections.Generic;
 
-namespace HungerGame.Entities
+namespace HungerGame.Entities.User
 {
     public class PlayerInventory
     {
-        public IEnumerable<Weapon> Weapons { get; set; }
-        public IEnumerable<Drink> Drinks { get; set; }
-        public IEnumerable<Food> Food { get; set; }
-        public IEnumerable<FirstAid> FirstAid { get; set; }
+        public List<WeaponInventory> Weapons { get; set; }
+        public List<DrinkInventory> Drinks { get; set; }
+        public List<FoodInventory> Food { get; set; }
+        public List<FirstAidInventory> FirstAid { get; set; }
     }
 }

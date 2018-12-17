@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace HungerGame.Entities
+namespace HungerGame.Entities.Items
 {
     public class ItemDrop
     {
-        public IEnumerable<Drink> Drinks { get; set; }
-        public IEnumerable<Food> Foods { get; set; }
-        public IEnumerable<FirstAid> FirstAids { get; set; }
-        public IEnumerable<Weapon> Weapons { get; set; }
+        public List<Drink> Drinks { get; set; }
+        public List<Food> Foods { get; set; }
+        public List<FirstAid> FirstAids { get; set; }
+        public List<Weapon> Weapons { get; set; }
     }
 }

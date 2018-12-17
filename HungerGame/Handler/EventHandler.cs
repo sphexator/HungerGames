@@ -1,20 +1,23 @@
-﻿using HungerGame.Calculate;
+﻿using System.Collections.Generic;
 using HungerGame.Entities;
-using HungerGame.Events.Types;
+using HungerGame.Entities.Internal;
+using HungerGame.Entities.Internal.Events;
+using HungerGame.Entities.User;
+using HungerGame.Generator;
 
-namespace HungerGame.Events
+namespace HungerGame.Handler
 {
-    internal class EventHandler
+    internal class EventHandler : IRequired
     {
-        private ChanceGenerator _chance;
-        private Loot _loot;
-        private Kill _kill;
-        private Idle _idle;
-        private Meet _meet;
-        private Hack _hack;
-        private Die _die;
-        private Sleep _sleep;
-        private Eat _eat;
+        private readonly ChanceGenerator _chance;
+        private readonly Loot _loot;
+        private readonly Kill _kill;
+        private readonly Idle _idle;
+        private readonly Meet _meet;
+        private readonly Hack _hack;
+        private readonly Die _die;
+        private readonly Sleep _sleep;
+        private readonly Eat _eat;
 
         public EventHandler(ChanceGenerator chance, Loot loot, Kill kill, Idle idle, Hack hack, Meet meet, Die die, Sleep sleep, Eat eat)
         {
@@ -28,44 +31,45 @@ namespace HungerGame.Events
             _sleep = sleep;
             _eat = eat;
         }
-        internal string EventManager(HungerGameProfile profile)
+
+        internal string EventManager(List<HungerGameProfile> users, HungerGameProfile profile)
         {
             var evt = _chance.EventDetermination(profile);
             switch (evt)
             {
-                case _chance.LootName:
+                case ActionType.Loot:
                 {
                     var response = _loot.LootEvent(profile);
                     return response;
                 }
-                case _chance.KillName:
+                case ActionType.Kill:
                 {
-                    var response = _kill.KillEvent(profile);
+                    var response = _kill.KillEvent(users, profile);
                     return response;
                 }
-                case _chance.IdleName:
+                case ActionType.Idle:
                 {
                     var response = _idle.IdleEvent();
                     return response;
                 }
-                case _chance.MeetName:
+                case ActionType.Meet:
                 {
                     var response = _meet.MeetEvent();
                     return response;
                 }
-                case _chance.HackName:
+                case ActionType.Hack:
                 {
                     return _hack.HackEvent(profile);
                 }
-                case _chance.DieName:
+                case ActionType.Die:
                 {
                     return _die.DieEvent(profile);
                 }
-                case _chance.SleepName:
+                case ActionType.Sleep:
                 {
                     return _sleep.SleepEvent(profile);
                 }
-                case _chance.EatName:
+                case ActionType.Eat:
                 {
                     return _eat.EatEvent(profile);
                 }
@@ -73,9 +77,6 @@ namespace HungerGame.Events
                     return _idle.IdleEvent();
 
             }
-
-            var msg = Idle.IdleEvent();
-            return msg;
         }
     }
 }

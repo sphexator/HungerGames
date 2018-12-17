@@ -1,6 +1,6 @@
-﻿using HungerGame.Entities;
+﻿using HungerGame.Entities.User;
 
-namespace HungerGame.Events.Types
+namespace HungerGame.Entities.Internal.Events
 {
     internal class Eat : IRequired
     {

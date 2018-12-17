@@ -1,10 +1,16 @@
 ﻿using System;
-using HungerGame.Entities;
+using HungerGame.Entities.User;
 
-namespace HungerGame.Events.Types
+namespace HungerGame.Entities.Internal.Events
 {
     internal class Die : IRequired
     {
+        private readonly Random _random;
+        internal Die(Random random)
+        {
+            _random = random;
+        }
+
         private readonly string[] _dieResponseStrings =
         {
             "Climbed up a tree and fell to his death",
@@ -14,8 +20,7 @@ namespace HungerGame.Events.Types
 
         internal string DieEvent(HungerGameProfile profile)
         {
-            var rand = new Random();
-            var response = _dieResponseStrings[rand.Next(0, _dieResponseStrings.Length)];
+            var response = _dieResponseStrings[_random.Next(0, _dieResponseStrings.Length)];
             profile.Alive = false;
             profile.Health = 0;
             return response;
