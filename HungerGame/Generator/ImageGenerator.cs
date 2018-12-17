@@ -32,7 +32,6 @@ namespace HungerGame.Generator
             var height = 0;
             var seat = 0;
             var row = 0;
-            using (var client = new HttpClient())
             using (var img = new Image<Rgba32>(550, 550))
             {
                 foreach (var x in profile)
@@ -40,12 +39,12 @@ namespace HungerGame.Generator
                     var points = GetBorderPointers(width, height);
                     var hpBar = GetHeathBar(width, height, x.Health);
                     var avi = await GetUserAvatar(x.UserId);
-                    if (x.Health <= 0 && x.Status) x.Status = false;
+                    if (x.Health <= 0 && x.Alive) x.Alive = false;
 
                     // Profile picture drawing
-                    if (x.Status == false)
+                    if (!x.Alive)
                     {
-                        var death = Image.Load(await client.GetStreamAsync("https://i.imgur.com/eONxWtN.png"));
+                        var death = Image.Load(await _httpClient.GetStreamAsync("https://i.imgur.com/eONxWtN.png"));
                         death.Mutate(z => z.Resize(80, 80));
                         avi.Mutate(y => y
                             .BlackWhite()
@@ -61,7 +60,7 @@ namespace HungerGame.Generator
                     img.Mutate(a => a
                         .DrawImage(GraphicsOptions.Default, avi, new Point(20 + 108 * width, 6 + 111 * height))
                         .FillPolygon(new SolidBrush<Rgba32>(new Rgba32(30, 30, 30)), points));
-                    if (x.Status)
+                    if (x.Alive)
                         img.Mutate(a => a.FillPolygon(new SolidBrush<Rgba32>(new Rgba32(46, 204, 113)), hpBar));
 
                     // Health text drawing
@@ -104,7 +103,7 @@ namespace HungerGame.Generator
             return result;
         }
 
-        private static PointF[] GetHeathBar(int seat, int row, int damage)
+        private static PointF[] GetHeathBar(int seat, int row, double health)
         {
             //Size of box
             const int w1 = 10 + 3;
@@ -112,14 +111,14 @@ namespace HungerGame.Generator
             const int h1 = 86 + 2;
             const int h2 = 101 - 2;
 
-            damage = 100 - damage;
-            if (damage < 0) damage = 1;
-            if (damage >= 100) damage = 100;
+            health = 100 - health;
+            if (health < 0) health = 1;
+            if (health >= 100) health = 100;
 
             var point1 = new PointF(w1 + seat * 108, h1 + row * 111);
-            var point2 = new PointF(w2 + seat * 108 - damage, h1 + row * 111);
+            var point2 = new PointF((float) (w2 + seat * 108 - health), h1 + row * 111);
 
-            var point3 = new PointF(w2 + seat * 108 - damage, h2 + row * 111);
+            var point3 = new PointF((float) (w2 + seat * 108 - health), h2 + row * 111);
             var point4 = new PointF(w1 + seat * 108, h2 + row * 111);
 
             var result = new List<PointF> {point1, point2, point3, point4}.ToArray();

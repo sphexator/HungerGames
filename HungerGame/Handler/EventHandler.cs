@@ -17,9 +17,9 @@ namespace HungerGame.Handler
         private readonly Hack _hack;
         private readonly Die _die;
         private readonly Sleep _sleep;
-        private readonly Eat _eat;
+        private readonly Consume _eat;
 
-        public EventHandler(ChanceGenerator chance, Loot loot, Kill kill, Idle idle, Hack hack, Meet meet, Die die, Sleep sleep, Eat eat)
+        public EventHandler(ChanceGenerator chance, Loot loot, Kill kill, Idle idle, Hack hack, Meet meet, Die die, Sleep sleep, Consume eat)
         {
             _chance = chance;
             _loot = loot;

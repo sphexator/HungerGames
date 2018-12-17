@@ -9,6 +9,7 @@ namespace HungerGame.Generator
     internal class ChanceGenerator : IRequired
     {
         private readonly Random _rand;
+
         internal ChanceGenerator(Random rand)
         {
             _rand = rand;
@@ -27,14 +28,14 @@ namespace HungerGame.Generator
         {
             var loot = LootChance(profile);
             var kill = KillChance(profile);
-            var idle = IdleChance(profile);
-            var meet = MeetChance(profile);
-            var hack = HackChance(profile);
-            var die = DieChance(profile);
+            var idle = IdleChance();
+            var meet = MeetChance();
+            var hack = HackChance();
+            var die = DieChance();
             var sleep = SleepChance(profile);
             var eat = EatChance(profile);
 
-            var result = loot + kill + idle + meet + hack + die + sleep + eat;;
+            var result = loot + kill + idle + meet + hack + die + sleep + eat;
             var generator = _rand.Next(result);
             if (generator <= loot) return ActionType.Loot;
             if (generator <= loot + kill) return ActionType.Kill;
@@ -55,13 +56,13 @@ namespace HungerGame.Generator
 
         private static int KillChance(HungerGameProfile profile)
         {
-            if (profile.Water == 0 || profile.Food == 0)
+            if (profile.Inventory.Drinks.Count == 0 || profile.Inventory.Food.Count == 0)
                 return 0;
-            if (profile.Water == 1 || profile.Food == 1) return Kill;
-            if (profile.TotalWeapons >= 1 && (profile.Water > 2 ||
-                profile.Food > 2))
+            if (profile.Inventory.Drinks.Count == 1 || profile.Inventory.Food.Count == 1) return Kill;
+            if (profile.Inventory.Weapons.Count >= 1 && (profile.Inventory.Drinks.Count > 2 ||
+                                                         profile.Inventory.Food.Count > 2))
                 return Kill + 10000;
-            if (profile.Water > 1 || profile.Food > 1)
+            if (profile.Inventory.Drinks.Count > 1 || profile.Inventory.Food.Count > 1)
                 return Kill + 1500;
             return Kill;
         }
@@ -83,12 +84,12 @@ namespace HungerGame.Generator
             return Eat;
         }
 
-        private static int IdleChance(HungerGameProfile profile) => Idle;
+        private static int IdleChance() => Idle;
 
-        private static int MeetChance(HungerGameProfile profile) => Meet;
+        private static int MeetChance() => Meet;
 
-        private static int HackChance(HungerGameProfile profile) => Hack;
+        private static int HackChance() => Hack;
 
-        private static int DieChance(HungerGameProfile profile) => Die;
+        private static int DieChance() => Die;
     }
 }
