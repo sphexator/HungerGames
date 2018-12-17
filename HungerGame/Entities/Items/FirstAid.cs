@@ -1,4 +1,4 @@
-﻿namespace HungerGame.Entities
+﻿namespace HungerGame.Entities.Items
 {
     public class FirstAid
     {
