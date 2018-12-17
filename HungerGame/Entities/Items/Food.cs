@@ -1,0 +1,8 @@
+﻿namespace HungerGame.Entities
+{
+    public class Food
+    {
+        public string Name { get; set; } = "Beans";
+        public int HungerGain { get; set; } = 40;
+    }
+}
