@@ -6,15 +6,14 @@ using System.Reflection;
 using System.Threading.Tasks;
 using HungerGame.Entities;
 using HungerGame.Entities.Internal;
+using HungerGame.Entities.Items;
 using HungerGame.Entities.User;
-using HungerGame.Generator;
 using HungerGame.Handler;
 using Microsoft.Extensions.DependencyInjection;
-using EventHandler = HungerGame.Handler.EventHandler;
 
 namespace HungerGame
 {
-    public class HungerGamesClient
+    public class HungerGamesClienti : IDisposable
     {
         private readonly HungerGameConfig _config;
         private readonly IServiceProvider _service;
@@ -28,11 +27,11 @@ namespace HungerGame
         public HungerGamesClient(HungerGameConfig cfg)
         {
             _config = cfg;
-             _service = ConfigureServices();
+            _service = ConfigureServices();
         }
 
-        public async Task<HungerGameResult> PlayAsync(List<HungerGameProfile> profiles) 
-            => await _service.GetRequiredService<GameHandler>().RoundAsync(profiles);
+        public async Task<HungerGameResult> PlayAsync(List<HungerGameProfile> profiles, ItemDrop itemDrops) =>
+            await _service.GetRequiredService<GameHandler>().RoundAsync(profiles, itemDrops);
 
         private static IServiceProvider ConfigureServices()
         {
@@ -46,6 +45,11 @@ namespace HungerGame
                             && !x.GetTypeInfo().IsInterface && !x.GetTypeInfo().IsAbstract).ToList();
             foreach (var x in requiredServices) services.AddSingleton(x);
             return services.BuildServiceProvider();
+        }
+
+        public void Dispose()
+        {
+
         }
     }
 }

@@ -8,14 +8,12 @@ namespace HungerGame.Entities.Internal.Events
 {
     internal class Loot : IRequired
     {
-        private readonly Random _random;
-        internal Loot(Random random)
-        {
-            _random = random;
-        }
         private const int FoodAndWater = 100;
         private const int Weapons = 15;
         private const int Bandages = 50;
+        private readonly Random _random;
+
+        internal Loot(Random random) => _random = random;
 
         internal string LootEvent(HungerGameProfile profile, ItemDrop items)
         {
@@ -31,16 +29,17 @@ namespace HungerGame.Entities.Internal.Events
                     case 1:
                         drink = items.Drinks[_random.Next(items.Drinks.Count)];
                         var drinkCheck = profile.Inventory.Drinks.FirstOrDefault(x => x.Drink == drink);
-                        
-                        if (drinkCheck == null) profile.Inventory.Drinks.Add(new DrinkInventory { Amount = 1, Drink = drink });
+
+                        if (drinkCheck == null)
+                            profile.Inventory.Drinks.Add(new DrinkInventory {Amount = 1, Drink = drink});
                         else drinkCheck.Amount += 1;
-                        
+
                         return $"Looted {drink.Name}";
                     case 2:
                         food = items.Foods[_random.Next(items.Foods.Count)];
                         var foodCheck = profile.Inventory.Food.FirstOrDefault(x => x.Food == food);
-                        
-                        if (foodCheck == null) profile.Inventory.Food.Add(new FoodInventory { Amount = 1, Food = food });
+
+                        if (foodCheck == null) profile.Inventory.Food.Add(new FoodInventory {Amount = 1, Food = food});
                         else foodCheck.Amount += 1;
 
                         return $"Looted {food.Name}";
@@ -49,10 +48,12 @@ namespace HungerGame.Entities.Internal.Events
                         food = items.Foods[_random.Next(items.Foods.Count)];
                         var foodCheckTwo = profile.Inventory.Food.FirstOrDefault(x => x.Food == food);
                         var drinkCheckTwo = profile.Inventory.Drinks.FirstOrDefault(x => x.Drink == drink);
-                        
-                        if (foodCheckTwo == null) profile.Inventory.Food.Add(new FoodInventory { Amount = 1, Food = food });
+
+                        if (foodCheckTwo == null)
+                            profile.Inventory.Food.Add(new FoodInventory {Amount = 1, Food = food});
                         else foodCheckTwo.Amount += 1;
-                        if (drinkCheckTwo == null) profile.Inventory.Drinks.Add(new DrinkInventory { Amount = 1, Drink = drink });
+                        if (drinkCheckTwo == null)
+                            profile.Inventory.Drinks.Add(new DrinkInventory {Amount = 1, Drink = drink});
                         else drinkCheckTwo.Amount += 1;
 
                         return $"Looted {food.Name} and {drink.Name}";
@@ -60,6 +61,7 @@ namespace HungerGame.Entities.Internal.Events
                         return null;
                 }
             }
+
             if (result <= FoodAndWater + Bandages)
             {
                 var firstAid = items.FirstAids[_random.Next(items.FirstAids.Count)];
@@ -69,6 +71,7 @@ namespace HungerGame.Entities.Internal.Events
                 else firstAidCheck.Amount += 1;
                 return $"Looted {firstAid.Name}";
             }
+
             string response;
             var weapon = items.Weapons[_random.Next(items.Weapons.Count)];
             var weaponCheck = profile.Inventory.Weapons.FirstOrDefault(x => x.Weapon == weapon);

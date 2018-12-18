@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using HungerGame.Entities.Items;
+﻿using HungerGame.Entities.Items;
 
 namespace HungerGame.Entities.User.Items
 {

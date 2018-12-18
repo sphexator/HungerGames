@@ -1,5 +1,5 @@
-﻿using HungerGame.Entities.User.Items;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using HungerGame.Entities.User.Items;
 
 namespace HungerGame.Entities.User
 {

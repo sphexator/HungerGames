@@ -1,5 +1,4 @@
 ﻿using System;
-using HungerGame.Entities.Items;
 using HungerGame.Entities.User;
 
 namespace HungerGame.Entities.Internal.Events
@@ -8,13 +7,10 @@ namespace HungerGame.Entities.Internal.Events
     {
         private readonly Random _random;
 
-        internal Consume(Random random)
-        {
-            _random = random;
-        }
+        internal Consume(Random random) => _random = random;
 
-        internal string EatEvent(HungerGameProfile profile)
-            => profile.Thirst > profile.Hunger ? Drink(profile) : Eat(profile);
+        internal string EatEvent(HungerGameProfile profile) =>
+            profile.Thirst > profile.Hunger ? Drink(profile) : Eat(profile);
 
         private string Drink(HungerGameProfile profile)
         {
@@ -24,9 +20,7 @@ namespace HungerGame.Entities.Internal.Events
             profile.Hunger += drink.Drink.HydrateAmount;
             profile.Stamina += drink.Drink.HydrateAmount;
             if (drink.Amount == 1)
-            {
                 profile.Inventory.Drinks.Remove(drink);
-            }
             else drink.Amount -= 1;
 
             return $"Drank {drink.Drink.Name}";
@@ -40,9 +34,7 @@ namespace HungerGame.Entities.Internal.Events
             profile.Hunger += food.Food.HungerGain;
             profile.Stamina += food.Food.HungerGain;
             if (food.Amount == 1)
-            {
                 profile.Inventory.Food.Remove(food);
-            }
             else food.Amount -= 1;
 
             return $"Ate {food.Food.Name}";

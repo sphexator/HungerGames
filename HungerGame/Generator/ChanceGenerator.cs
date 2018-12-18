@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using HungerGame.Entities;
 using HungerGame.Entities.Internal;
 using HungerGame.Entities.User;
 
@@ -8,13 +7,6 @@ namespace HungerGame.Generator
 {
     internal class ChanceGenerator : IRequired
     {
-        private readonly Random _rand;
-
-        internal ChanceGenerator(Random rand)
-        {
-            _rand = rand;
-        }
-
         private const int Loot = 400;
         private const int Kill = 100;
         private const int Idle = 200;
@@ -23,6 +15,9 @@ namespace HungerGame.Generator
         private const int Die = 1;
         private const int Sleep = 1;
         private const int Eat = 1;
+        private readonly Random _rand;
+
+        internal ChanceGenerator(Random rand) => _rand = rand;
 
         internal ActionType EventDetermination(HungerGameProfile profile)
         {
@@ -38,7 +33,7 @@ namespace HungerGame.Generator
             var result = loot + kill + idle + meet + hack + die + sleep + eat;
             var generator = _rand.Next(result);
             if (generator <= loot) return ActionType.Loot;
-            if (generator <= loot + kill) return ActionType.Kill;
+            if (generator <= loot + kill) return ActionType.Attack;
             if (generator <= loot + kill + idle) return ActionType.Idle;
             if (generator <= loot + kill + idle + meet) return ActionType.Meet;
             if (generator <= loot + kill + idle + meet + hack) return ActionType.Hack;

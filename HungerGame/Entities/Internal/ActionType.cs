@@ -3,7 +3,7 @@
     internal enum ActionType
     {
         Loot,
-        Kill,
+        Attack,
         Idle,
         Meet,
         Hack,

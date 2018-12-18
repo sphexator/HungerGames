@@ -1,28 +1,24 @@
-﻿using HungerGame.Entities.User;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
+using HungerGame.Entities.Internal;
+using HungerGame.Entities.User;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
-using HungerGame.Entities;
-using HungerGame.Entities.Internal;
-using Image = SixLabors.ImageSharp.Image;
 
 namespace HungerGame.Generator
 {
     internal class ImageGenerator : IRequired
     {
         private readonly HttpClient _httpClient;
-        internal ImageGenerator(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
+
+        internal ImageGenerator(HttpClient httpClient) => _httpClient = httpClient;
 
         internal async Task<Stream> GenerateEventImageAsync(IEnumerable<HungerGameProfile> profile)
         {
@@ -38,7 +34,7 @@ namespace HungerGame.Generator
                 {
                     var points = GetBorderPointers(width, height);
                     var hpBar = GetHeathBar(width, height, x.Health);
-                    var avi = await GetUserAvatar(x.UserId);
+                    var avi = await GetUserAvatar(x);
                     if (x.Health <= 0 && x.Alive) x.Alive = false;
 
                     // Profile picture drawing
@@ -143,14 +139,12 @@ namespace HungerGame.Generator
             return profile.Count <= 20 ? 409 : 510;
         }
 
-        private async Task<Image<Rgba32>> GetUserAvatar(ulong userid)
+        private async Task<Image<Rgba32>> GetUserAvatar(HungerGameProfile profile)
         {
             try
             {
-                if (userid < 100) return Image.Load($"Cache/DefaultAvatar/{userid}.png").Clone();
-                if (user == null && user.GetAvatarUrl() == null) return Image.Load(@"Cache\DefaultAvatar\Default.png").Clone();
                 return Image.Load(
-                    await _httpClient.GetStreamAsync(user.GetAvatarUrl(ImageFormat.Png, 1024))).Clone();
+                    await _httpClient.GetStreamAsync(profile.Avatar)).Clone();
             }
             catch
             {

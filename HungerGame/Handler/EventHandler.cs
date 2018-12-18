@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using HungerGame.Entities;
 using HungerGame.Entities.Internal;
 using HungerGame.Entities.Internal.Events;
+using HungerGame.Entities.Items;
 using HungerGame.Entities.User;
 using HungerGame.Generator;
 
@@ -10,20 +10,21 @@ namespace HungerGame.Handler
     internal class EventHandler : IRequired
     {
         private readonly ChanceGenerator _chance;
-        private readonly Loot _loot;
-        private readonly Kill _kill;
-        private readonly Idle _idle;
-        private readonly Meet _meet;
-        private readonly Hack _hack;
         private readonly Die _die;
-        private readonly Sleep _sleep;
         private readonly Consume _eat;
+        private readonly Hack _hack;
+        private readonly Idle _idle;
+        private readonly Attack _attack;
+        private readonly Loot _loot;
+        private readonly Meet _meet;
+        private readonly Sleep _sleep;
 
-        public EventHandler(ChanceGenerator chance, Loot loot, Kill kill, Idle idle, Hack hack, Meet meet, Die die, Sleep sleep, Consume eat)
+        public EventHandler(ChanceGenerator chance, Loot loot, Attack attack, Idle idle, Hack hack, Meet meet, Die die,
+            Sleep sleep, Consume eat)
         {
             _chance = chance;
             _loot = loot;
-            _kill = kill;
+            _attack = attack;
             _idle = idle;
             _hack = hack;
             _meet = meet;
@@ -32,34 +33,30 @@ namespace HungerGame.Handler
             _eat = eat;
         }
 
-        internal string EventManager(List<HungerGameProfile> users, HungerGameProfile profile)
+        internal string EventManager(List<HungerGameProfile> users, HungerGameProfile profile, ItemDrop drops)
         {
             var evt = _chance.EventDetermination(profile);
             switch (evt)
             {
                 case ActionType.Loot:
                 {
-                    var response = _loot.LootEvent(profile);
-                    return response;
+                    return _loot.LootEvent(profile, drops);
                 }
-                case ActionType.Kill:
+                case ActionType.Attack:
                 {
-                    var response = _kill.KillEvent(users, profile);
-                    return response;
+                    return _attack.AttackEvent(users, profile);
                 }
                 case ActionType.Idle:
                 {
-                    var response = _idle.IdleEvent();
-                    return response;
+                    return _idle.IdleEvent();
                 }
                 case ActionType.Meet:
                 {
-                    var response = _meet.MeetEvent();
-                    return response;
+                    return _meet.MeetEvent();
                 }
                 case ActionType.Hack:
                 {
-                    return _hack.HackEvent(profile);
+                    return _hack.HackEvent(profile, drops);
                 }
                 case ActionType.Die:
                 {
@@ -75,7 +72,6 @@ namespace HungerGame.Handler
                 }
                 default:
                     return _idle.IdleEvent();
-
             }
         }
     }

@@ -6,15 +6,13 @@ using HungerGame.Entities.User;
 
 namespace HungerGame.Entities.Internal.Events
 {
-    internal class Kill : IRequired
+    internal class Attack : IRequired
     {
         private readonly Random _random;
-        internal Kill(Random random)
-        {
-            _random = random;
-        }
 
-        internal string KillEvent(List<HungerGameProfile> profiles, HungerGameProfile profile)
+        internal Attack(Random random) => _random = random;
+
+        internal string AttackEvent(List<HungerGameProfile> profiles, HungerGameProfile profile)
         {
             var target = GetTarget(profiles);
             var weapon = GetBestWeapon(profile) ?? new Weapon();

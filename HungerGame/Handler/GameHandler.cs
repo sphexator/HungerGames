@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using HungerGame.Entities.Internal;
 using System.Threading.Tasks;
 using HungerGame.Entities;
+using HungerGame.Entities.Internal;
+using HungerGame.Entities.Items;
 using HungerGame.Entities.User;
 using HungerGame.Generator;
 
@@ -11,10 +12,11 @@ namespace HungerGame.Handler
 {
     internal class GameHandler : IRequired
     {
+        private readonly EventHandler _eventHandler;
+        private readonly ImageGenerator _generator;
         private readonly HttpClient _httpClient;
         private readonly Random _random;
-        private readonly ImageGenerator _generator;
-        private readonly EventHandler _eventHandler;
+
         internal GameHandler(Random random, HttpClient httpClient, ImageGenerator generator, EventHandler eventHandler)
         {
             _random = random;
@@ -23,13 +25,13 @@ namespace HungerGame.Handler
             _eventHandler = eventHandler;
         }
 
-        internal async Task<HungerGameResult> RoundAsync(List<HungerGameProfile> profiles)
+        internal async Task<HungerGameResult> RoundAsync(List<HungerGameProfile> profiles, ItemDrop itemDrops)
         {
             string output = null;
             foreach (var x in profiles)
             {
                 if (!x.Alive) continue;
-                var eventString = _eventHandler.EventManager(profiles, x);
+                var eventString = _eventHandler.EventManager(profiles, x, itemDrops);
                 if (eventString == null) continue;
                 try
                 {
