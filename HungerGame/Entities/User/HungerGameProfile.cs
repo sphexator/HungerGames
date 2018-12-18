@@ -1,6 +1,4 @@
-﻿using HungerGame.Entities.Internal;
-
-namespace HungerGame.Entities.User
+﻿namespace HungerGame.Entities.User
 {
     public class HungerGameProfile
     {

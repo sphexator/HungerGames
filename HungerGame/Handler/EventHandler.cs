@@ -9,12 +9,12 @@ namespace HungerGame.Handler
 {
     internal class EventHandler : IRequired
     {
+        private readonly Attack _attack;
         private readonly ChanceGenerator _chance;
         private readonly Die _die;
         private readonly Consume _eat;
         private readonly Hack _hack;
         private readonly Idle _idle;
-        private readonly Attack _attack;
         private readonly Loot _loot;
         private readonly Meet _meet;
         private readonly Sleep _sleep;
@@ -33,13 +33,15 @@ namespace HungerGame.Handler
             _eat = eat;
         }
 
-        internal string DetermineEvent(List<HungerGameProfile> users, HungerGameProfile profile, ItemDrop drops) => 
+        internal string DetermineEvent(List<HungerGameProfile> users, HungerGameProfile profile, ItemDrop drops) =>
             EventManager(_chance.EventDetermination(profile), users, profile, drops);
 
         internal string DetermineEvent(ActionType type, List<HungerGameProfile> users, HungerGameProfile profile,
             ItemDrop drops) =>
             EventManager(type, users, profile, drops);
-        private string EventManager(ActionType type, List<HungerGameProfile> users, HungerGameProfile profile, ItemDrop drops)
+
+        private string EventManager(ActionType type, List<HungerGameProfile> users, HungerGameProfile profile,
+            ItemDrop drops)
         {
             switch (type)
             {
