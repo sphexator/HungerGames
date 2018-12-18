@@ -31,7 +31,9 @@ namespace HungerGame.Handler
             foreach (var x in profiles)
             {
                 if (!x.Alive) continue;
-                var eventString = _eventHandler.EventManager(profiles, x, itemDrops);
+                string eventString;
+                if (x.Move.HasValue) eventString = _eventHandler.DetermineEvent(x.Move.Value, profiles, x, itemDrops);
+                else eventString = _eventHandler.DetermineEvent(profiles, x, itemDrops);
                 if (eventString == null) continue;
                 try
                 {

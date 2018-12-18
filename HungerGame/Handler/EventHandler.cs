@@ -33,10 +33,15 @@ namespace HungerGame.Handler
             _eat = eat;
         }
 
-        internal string EventManager(List<HungerGameProfile> users, HungerGameProfile profile, ItemDrop drops)
+        internal string DetermineEvent(List<HungerGameProfile> users, HungerGameProfile profile, ItemDrop drops) => 
+            EventManager(_chance.EventDetermination(profile), users, profile, drops);
+
+        internal string DetermineEvent(ActionType type, List<HungerGameProfile> users, HungerGameProfile profile,
+            ItemDrop drops) =>
+            EventManager(type, users, profile, drops);
+        private string EventManager(ActionType type, List<HungerGameProfile> users, HungerGameProfile profile, ItemDrop drops)
         {
-            var evt = _chance.EventDetermination(profile);
-            switch (evt)
+            switch (type)
             {
                 case ActionType.Loot:
                 {

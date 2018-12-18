@@ -1,4 +1,6 @@
-﻿namespace HungerGame.Entities.User
+﻿using HungerGame.Entities.Internal;
+
+namespace HungerGame.Entities.User
 {
     public class HungerGameProfile
     {
@@ -12,6 +14,6 @@
         public double Tiredness { get; set; }
         public bool Bleeding { get; set; } = false;
         public PlayerInventory Inventory { get; set; } = new PlayerInventory();
-        public ActionMove? Move { get; set; } = null;
+        public ActionType? Move { get; set; } = null;
     }
 }
