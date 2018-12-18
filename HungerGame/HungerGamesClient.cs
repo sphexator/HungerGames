@@ -13,15 +13,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HungerGame
 {
-    public class HungerGamesClienti : IDisposable
+    public class HungerGamesClient
     {
         private readonly HungerGameConfig _config;
         private readonly IServiceProvider _service;
 
         public HungerGamesClient()
         {
-            _service = ConfigureServices();
             _config = new HungerGameConfig();
+            _service = ConfigureServices();
         }
 
         public HungerGamesClient(HungerGameConfig cfg)
@@ -33,11 +33,12 @@ namespace HungerGame
         public async Task<HungerGameResult> PlayAsync(List<HungerGameProfile> profiles, ItemDrop itemDrops) =>
             await _service.GetRequiredService<GameHandler>().RoundAsync(profiles, itemDrops);
 
-        private static IServiceProvider ConfigureServices()
+
+        private IServiceProvider ConfigureServices()
         {
             var services = new ServiceCollection();
-            services.AddSingleton<Random>();
-            services.AddSingleton<HttpClient>();
+            services.AddSingleton(_config.HttpClient);
+            services.AddSingleton(_config.Random);
 
             var assembly = Assembly.GetAssembly(typeof(HungerGamesClient));
             var requiredServices = assembly.GetTypes()
@@ -45,11 +46,6 @@ namespace HungerGame
                             && !x.GetTypeInfo().IsInterface && !x.GetTypeInfo().IsAbstract).ToList();
             foreach (var x in requiredServices) services.AddSingleton(x);
             return services.BuildServiceProvider();
-        }
-
-        public void Dispose()
-        {
-
         }
     }
 }
