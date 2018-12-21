@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reflection.Metadata.Ecma335;
+using HungerGame.Entities.User;
 
 namespace HungerGame.Entities.Internal.Events
 {
@@ -16,6 +18,6 @@ namespace HungerGame.Entities.Internal.Events
 
         internal Idle(Random random) => _random = random;
 
-        internal string IdleEvent() => _idleStrings[_random.Next(0, _idleStrings.Length)];
+        internal UserAction IdleEvent() => null;
     }
 }

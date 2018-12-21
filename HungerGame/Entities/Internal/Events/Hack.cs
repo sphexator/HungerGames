@@ -7,7 +7,7 @@ namespace HungerGame.Entities.Internal.Events
 {
     internal class Hack : IRequired
     {
-        internal string HackEvent(HungerGameProfile profile, ItemDrop items)
+        internal UserAction HackEvent(HungerGameProfile profile, ItemDrop items, UserAction activity)
         {
             foreach (var x in items.Weapons)
             {
@@ -38,7 +38,8 @@ namespace HungerGame.Entities.Internal.Events
                 else foodCheck.Amount += 1;
             }
 
-            return "Hacked the system, obtaining every single item";
+            activity.Reward = items;
+            return activity;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using HungerGame.Entities;
 using HungerGame.Entities.Internal;
@@ -14,79 +14,88 @@ namespace HungerGame.Handler
     {
         private readonly EventHandler _eventHandler;
         private readonly ImageGenerator _generator;
-        private readonly HttpClient _httpClient;
         private readonly Random _random;
 
-        internal GameHandler(Random random, HttpClient httpClient, ImageGenerator generator, EventHandler eventHandler)
+        internal GameHandler(Random random, ImageGenerator generator, EventHandler eventHandler)
         {
             _random = random;
-            _httpClient = httpClient;
             _generator = generator;
             _eventHandler = eventHandler;
         }
 
-        internal async Task<HungerGameResult> RoundAsync(List<HungerGameProfile> profiles, ItemDrop itemDrops)
+        internal async Task<IEnumerable<HgResult>> CustomRoundAsync(List<HungerGameProfile> profiles, ItemDrop itemDrops)
         {
-            string output = null;
+            var result = new List<HgResult>();
             foreach (var x in profiles)
             {
-                if (!x.Alive) continue;
-                string eventString;
-                if (x.Move.HasValue) eventString = _eventHandler.DetermineEvent(x.Move.Value, profiles, x, itemDrops);
-                else eventString = _eventHandler.DetermineEvent(profiles, x, itemDrops);
-                if (eventString == null) continue;
-                try
+                var activity = new UserAction { BeforeProfile = x };
+                if (x.Alive)
                 {
-                    output += $"{x.Name.PadRight(20)} {eventString}\n";
+                    if (x.Move.HasValue) _eventHandler.DetermineEvent(x.Move.Value, profiles, x, itemDrops, activity);
+                    else _eventHandler.DetermineEvent(profiles, x, itemDrops, activity);
+                    Fatigue(x);
+                    SelfHarm(x);
                 }
-                catch
+
+                activity.AfterProfile = x;
+                result.Add(new HgResult
                 {
-                    output += $"{x.Name.PadRight(20)} {eventString}\n";
-                }
+                    Action = activity,
+                    Image = await _generator.GenerateSingleImageAsync(x)
+                });
             }
+            return result;
+        }
 
-            Fatigue(profiles);
-            SelfHarm(profiles);
-
-            var image = await _generator.GenerateEventImageAsync(profiles);
-            var data = new HungerGameResult
+        internal async Task<HgOverallResult> DefaultRoundAsync(List<HungerGameProfile> profiles, ItemDrop itemDrops)
+        {
+            var result = new HgOverallResult
             {
-                Content = output,
-                Image = image,
-                Participants = profiles
+                Participants = profiles,
+                Image = await _generator.GenerateEventImageAsync(profiles)
             };
-            return data;
-        }
-
-        private void Fatigue(IEnumerable<HungerGameProfile> profiles)
-        {
+            var userActions = new List<UserAction>();
             foreach (var x in profiles)
             {
-                if (!x.Alive) continue;
-                x.Hunger = x.Hunger + _random.Next(5, 10);
-                x.Tiredness = x.Tiredness + _random.Next(20, 30);
+                var activity = new UserAction { BeforeProfile = x };
+                if (x.Alive)
+                {
+                    if (x.Move.HasValue) _eventHandler.DetermineEvent(x.Move.Value, profiles, x, itemDrops, activity);
+                    else _eventHandler.DetermineEvent(profiles, x, itemDrops, activity);
+                    Fatigue(x);
+                    SelfHarm(x);
+                }
+                activity.AfterProfile = x;
+                userActions.Add(activity);
+            }
+
+            result.UserAction = userActions;
+            return result;
+        }
+
+        private void SelfHarm(HungerGameProfile profile)
+        {
+            if (!profile.Alive) return;
+            int dmg;
+            if (profile.Hunger >= 90 || profile.Tiredness >= 100) dmg = _random.Next(20, 30);
+            else if (profile.Hunger >= 80 || profile.Tiredness >= 90) dmg = _random.Next(5, 10);
+            else return;
+            if (profile.Health - dmg <= 0)
+            {
+                profile.Alive = false;
+                profile.Health = 0;
+            }
+            else
+            {
+                profile.Health = profile.Health - dmg;
             }
         }
 
-        private void SelfHarm(IEnumerable<HungerGameProfile> profiles)
+        private void Fatigue(HungerGameProfile profile)
         {
-            foreach (var x in profiles)
-            {
-                if (!x.Alive) continue;
-                int dmg;
-                if (x.Hunger >= 90 || x.Tiredness >= 100) dmg = _random.Next(20, 30);
-                else if (x.Hunger >= 80 || x.Tiredness >= 90) dmg = _random.Next(5, 10);
-                else continue;
-                if (x.Health - dmg <= 0)
-                {
-                    x.Alive = false;
-                    x.Health = 0;
-                }
-                else
-                {
-                    x.Health = x.Health - dmg;
-                }
-            }
+            if (!profile.Alive) return;
+            profile.Hunger = profile.Hunger + _random.Next(5, 10);
+            profile.Tiredness = profile.Tiredness + _random.Next(20, 30);
         }
     }
 }

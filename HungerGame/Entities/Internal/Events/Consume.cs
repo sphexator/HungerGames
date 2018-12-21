@@ -9,12 +9,15 @@ namespace HungerGame.Entities.Internal.Events
 
         internal Consume(Random random) => _random = random;
 
-        internal string EatEvent(HungerGameProfile profile) =>
-            profile.Thirst > profile.Hunger ? Drink(profile) : Eat(profile);
-
-        private string Drink(HungerGameProfile profile)
+        internal void EatEvent(HungerGameProfile profile)
         {
-            if (profile.Inventory.Drinks.Count == 0) return null;
+            if(profile.Thirst > profile.Hunger) Drink(profile);
+            else Eat(profile);
+        }
+
+        private void Drink(HungerGameProfile profile)
+        {
+            if (profile.Inventory.Drinks.Count == 0) return;
 
             var drink = profile.Inventory.Drinks[_random.Next(profile.Inventory.Drinks.Count)];
             profile.Hunger += drink.Drink.HydrateAmount;
@@ -22,13 +25,11 @@ namespace HungerGame.Entities.Internal.Events
             if (drink.Amount == 1)
                 profile.Inventory.Drinks.Remove(drink);
             else drink.Amount -= 1;
-
-            return $"Drank {drink.Drink.Name}";
         }
 
-        private string Eat(HungerGameProfile profile)
+        private void Eat(HungerGameProfile profile)
         {
-            if (profile.Inventory.Food.Count == 0) return null;
+            if (profile.Inventory.Food.Count == 0) return;
 
             var food = profile.Inventory.Food[_random.Next(profile.Inventory.Food.Count)];
             profile.Hunger += food.Food.HungerGain;
@@ -36,8 +37,6 @@ namespace HungerGame.Entities.Internal.Events
             if (food.Amount == 1)
                 profile.Inventory.Food.Remove(food);
             else food.Amount -= 1;
-
-            return $"Ate {food.Food.Name}";
         }
     }
 }

@@ -29,9 +29,11 @@ namespace HungerGame
             _service = ConfigureServices();
         }
 
-        public async Task<HungerGameResult> PlayAsync(List<HungerGameProfile> profiles, ItemDrop itemDrops) =>
-            await _service.GetRequiredService<GameHandler>().RoundAsync(profiles, itemDrops);
+        public async Task<IEnumerable<HgResult>> PlayCustomAsync(List<HungerGameProfile> profiles, ItemDrop itemDrops) =>
+            await _service.GetRequiredService<GameHandler>().CustomRoundAsync(profiles, itemDrops);
 
+        public async Task<HgOverallResult> PlayDefaultAsync(List<HungerGameProfile> profiles, ItemDrop itemDrops) =>
+            await _service.GetRequiredService<GameHandler>().DefaultRoundAsync(profiles, itemDrops);
 
         private IServiceProvider ConfigureServices()
         {

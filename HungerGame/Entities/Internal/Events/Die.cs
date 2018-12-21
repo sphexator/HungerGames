@@ -16,12 +16,10 @@ namespace HungerGame.Entities.Internal.Events
 
         internal Die(Random random) => _random = random;
 
-        internal string DieEvent(HungerGameProfile profile)
+        internal void DieEvent(HungerGameProfile profile)
         {
-            var response = _dieResponseStrings[_random.Next(0, _dieResponseStrings.Length)];
             profile.Alive = false;
             profile.Health = 0;
-            return response;
         }
     }
 }

@@ -12,25 +12,22 @@ namespace HungerGame.Entities.Internal.Events
 
         internal Attack(Random random) => _random = random;
 
-        internal string AttackEvent(List<HungerGameProfile> profiles, HungerGameProfile profile)
+        internal UserAction AttackEvent(List<HungerGameProfile> profiles, HungerGameProfile profile, UserAction activity)
         {
             var target = GetTarget(profiles);
             var weapon = GetBestWeapon(profile) ?? new Weapon();
-            string response;
             if (target.Health <= target.Health - weapon.Damage)
             {
                 target.Health = 0;
                 target.Alive = false;
-                response = $"Killed {target.Name} with {weapon.Name} inflicting {weapon.Damage} damage";
             }
             else
             {
                 target.Health -= weapon.Damage;
-                response = $"inflicting {weapon.Damage} damage to {target.Name} with {weapon.Name}";
             }
 
             if (weapon.Ammo != null) weapon.Ammo -= 1;
-            return response;
+            return activity;
         }
 
         private HungerGameProfile GetTarget(IReadOnlyList<HungerGameProfile> users)

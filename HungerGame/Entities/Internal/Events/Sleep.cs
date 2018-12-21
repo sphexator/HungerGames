@@ -4,11 +4,10 @@ namespace HungerGame.Entities.Internal.Events
 {
     internal class Sleep : IRequired
     {
-        internal string SleepEvent(HungerGameProfile profile)
+        internal void SleepEvent(HungerGameProfile profile)
         {
             profile.Tiredness = 0;
             profile.Stamina = 100;
-            return "Fell asleep";
         }
     }
 }

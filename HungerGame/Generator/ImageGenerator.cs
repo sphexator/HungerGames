@@ -20,16 +20,27 @@ namespace HungerGame.Generator
 
         internal ImageGenerator(HttpClient httpClient) => _httpClient = httpClient;
 
+        internal async Task<Stream> GenerateSingleImageAsync(HungerGameProfile profile)
+        {
+            var stream = new MemoryStream();
+            using (var img = new Image<Rgba32>(550, 550))
+            {
+
+            }
+
+            return stream;
+        }
+
         internal async Task<Stream> GenerateEventImageAsync(IEnumerable<HungerGameProfile> profile)
         {
             if (profile == null) throw new ArgumentNullException(nameof(profile));
             var result = new MemoryStream();
-            var width = 0;
-            var height = 0;
-            var seat = 0;
-            var row = 0;
             using (var img = new Image<Rgba32>(550, 550))
             {
+                var width = 0;
+                var height = 0;
+                var seat = 0;
+                var row = 0;
                 foreach (var x in profile)
                 {
                     var points = GetBorderPointers(width, height);

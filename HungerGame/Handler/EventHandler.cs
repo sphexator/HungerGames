@@ -14,71 +14,78 @@ namespace HungerGame.Handler
         private readonly Die _die;
         private readonly Consume _eat;
         private readonly Hack _hack;
-        private readonly Idle _idle;
         private readonly Loot _loot;
-        private readonly Meet _meet;
         private readonly Sleep _sleep;
 
-        public EventHandler(ChanceGenerator chance, Loot loot, Attack attack, Idle idle, Hack hack, Meet meet, Die die,
+        internal EventHandler(ChanceGenerator chance, Loot loot, Attack attack, Hack hack, Die die,
             Sleep sleep, Consume eat)
         {
             _chance = chance;
             _loot = loot;
             _attack = attack;
-            _idle = idle;
             _hack = hack;
-            _meet = meet;
             _die = die;
             _sleep = sleep;
             _eat = eat;
         }
 
-        internal string DetermineEvent(List<HungerGameProfile> users, HungerGameProfile profile, ItemDrop drops) =>
-            EventManager(_chance.EventDetermination(profile), users, profile, drops);
+        internal void DetermineEvent(List<HungerGameProfile> users, HungerGameProfile profile, ItemDrop drops, UserAction activity) =>
+            EventManager(_chance.EventDetermination(profile), users, profile, drops, activity);
 
-        internal string DetermineEvent(ActionType type, List<HungerGameProfile> users, HungerGameProfile profile,
-            ItemDrop drops) =>
-            EventManager(type, users, profile, drops);
+        internal void DetermineEvent(ActionType type, List<HungerGameProfile> users, HungerGameProfile profile,
+            ItemDrop drops, UserAction activity) =>
+            EventManager(type, users, profile, drops, activity);
 
-        private string EventManager(ActionType type, List<HungerGameProfile> users, HungerGameProfile profile,
-            ItemDrop drops)
+        private UserAction EventManager(ActionType type, List<HungerGameProfile> users, HungerGameProfile profile,
+            ItemDrop drops, UserAction activity)
         {
             switch (type)
             {
                 case ActionType.Loot:
                 {
-                    return _loot.LootEvent(profile, drops);
+                    return _loot.LootEvent(profile, drops, activity);
                 }
                 case ActionType.Attack:
                 {
-                    return _attack.AttackEvent(users, profile);
+                    activity.Action = ActionType.Attack;
+                    return _attack.AttackEvent(users, profile, activity);
                 }
                 case ActionType.Idle:
                 {
-                    return _idle.IdleEvent();
+                    activity.Action = ActionType.Idle;
+                    return activity;
                 }
                 case ActionType.Meet:
                 {
-                    return _meet.MeetEvent();
+                    activity.Action = ActionType.Meet;
+                    return activity;
                 }
                 case ActionType.Hack:
                 {
-                    return _hack.HackEvent(profile, drops);
+                    activity.Action = ActionType.Hack;
+                    return _hack.HackEvent(profile, drops, activity);
                 }
                 case ActionType.Die:
                 {
-                    return _die.DieEvent(profile);
+                    activity.Action = ActionType.Die;
+                    _die.DieEvent(profile);
+                    return activity;
                 }
                 case ActionType.Sleep:
                 {
-                    return _sleep.SleepEvent(profile);
+                    activity.Action = ActionType.Sleep;
+                    _sleep.SleepEvent(profile);
+                    return activity;
                 }
                 case ActionType.Eat:
                 {
-                    return _eat.EatEvent(profile);
+                    activity.Action = ActionType.Eat;
+                    _eat.EatEvent(profile);
+                    return activity;
                 }
                 default:
-                    return _idle.IdleEvent();
+                    activity.Action = ActionType.Idle;
+                    return activity;
             }
         }
     }
